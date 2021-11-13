@@ -14,6 +14,7 @@
 using namespace std;
 
 typedef vector<double> vertix;
+typedef vector<vertix> vertexVector;
 
 /* POSSIBLE ARCHITECTURE:
  * - create 26 (or how many characters there is) letter objects, each containing
@@ -25,12 +26,35 @@ typedef vector<double> vertix;
  * - a loop goes over all buffer blocks and draws characters on the screen.
 */
 
+class Letter {
+public:
+	vector<vertix> points;
+	Letter(vector<vertix> &p);
+	void draw(double x, double y);
+};
+
+Letter::Letter(vector<vertix> &p) {
+	points = p;
+}
+
+// This draw the character to an arbitrary position decided by caller.
+// Useful for creating a buffer (array of letters) that calls draw on all its contents
+void Letter::draw(double x, double y) {
+	glBegin(GL_LINES);
+	{
+		for (vector<double> p : points) {
+			glVertex2d(x + p[0], y + p[1]);
+		}
+	}
+	glEnd();
+}
+
 // TODO: Change character offset to an array containing horizontal start location
 // of each character.
 double characterOffset;
-vector<vertix> *letterToDraw;
+Letter* letterToDraw;
 
-vector<vertix> letterA = {
+vertexVector letterPointsA = {
 	vertix {0, 0},
 	vertix {0.1, 0.2},
 	vertix {0.1, 0.2},
@@ -43,11 +67,13 @@ vector<vertix> letterA = {
 	vertix {0.4, 0.2}
 };
 
-vector<vertix> letterB = {
+Letter A = Letter(letterPointsA);
+
+vertexVector letterB = {
 
 };
 
-vector<vertix> letterC = {
+vertexVector letterPointsC = {
 	vertix {0.5, 0},
 	vertix {0, 0},
 	vertix {0, 0},
@@ -56,16 +82,23 @@ vector<vertix> letterC = {
 	vertix {0.5, 0.5},
 };
 
-vector<vertix> letterD = {
+Letter C = Letter(letterPointsC);
+
+vertexVector letterD = {
 
 };
 
-vector<vertix> letterE = {
+vertexVector letterE = {
 
 };
 
-vector<vertix> letterF = {
+vertexVector letterF = {
 
+};
+
+vector<Letter*> allLetters = {
+	&A,
+	&C
 };
 
 void renderCharacter(char c) {
@@ -73,10 +106,10 @@ void renderCharacter(char c) {
 	c = toupper(c);
 	switch (c) {
 	case 'A':
-		letterToDraw = &letterA;
+		letterToDraw = allLetters[0];
 		break;
 	case 'C':
-		letterToDraw = &letterC;
+		letterToDraw = allLetters[1];
 		break;
 	}
 }
@@ -86,12 +119,8 @@ void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glColor3f(0, 0, 0);
-	glBegin(GL_LINES);
-	{
-		for (vertix v : *letterToDraw) {
-			glVertex2d(-1 + v[0], v[1]);
-		}
-	}
+	letterToDraw->draw(0, 0);
+
 	glEnd();
 	glutSwapBuffers();
 }
@@ -128,7 +157,7 @@ void test() {
 }
 
 void init() {
-	letterToDraw = &letterA;
+	letterToDraw = allLetters[0];
 	characterOffset = 0;
 }
 
