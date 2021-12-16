@@ -29,6 +29,7 @@ typedef vector<vertix> vertexVector;
 class Letter {
 private:
 	GLuint listID;
+	void buildLetter();
 public:
 	vector<vertix> points;
 	Letter(vector<vertix> &p);
@@ -39,20 +40,26 @@ Letter::Letter(vector<vertix> &p) {
 	points = p;
 	listID = glGenLists(1);
 	glNewList(listID, GL_COMPILE);
-	draw(0, 0);
+	buildLetter();
 	glEndList();
 }
 
 // This draw the character to an arbitrary position decided by caller.
 // Useful for creating a buffer (array of letters) that calls draw on all its contents
-void Letter::draw(double x, double y) {
+void Letter::buildLetter() {
 	glBegin(GL_LINES);
 	{
 		for (vector<double> p : points) {
-			glVertex2d(x + p[0], y + p[1]);
+			glColor3f(0, 0, 0);
+			glVertex2d(p[0], p[1]);
 		}
 	}
 	glEnd();
+}
+
+void Letter::draw(double x, double y) {
+	glCallList(listID);
+	//buildLetter();
 }
 
 // TODO: Change character offset to an array containing horizontal start location
@@ -130,10 +137,8 @@ void display() {
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glColor3f(0, 0, 0);
 	letterToDraw->draw(0, 0);
 
-	glEnd();
 	glutSwapBuffers();
 }
 
@@ -174,6 +179,8 @@ void reshape(int w, int h) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0, 2.0, 0.0, 2.0, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	cout << w << " " << h << endl;
 }
 
