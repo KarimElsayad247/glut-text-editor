@@ -27,6 +27,8 @@ typedef vector<vertix> vertexVector;
 */
 
 class Letter {
+private:
+	GLuint listID;
 public:
 	vector<vertix> points;
 	Letter(vector<vertix> &p);
@@ -35,6 +37,10 @@ public:
 
 Letter::Letter(vector<vertix> &p) {
 	points = p;
+	listID = glGenLists(1);
+	glNewList(listID, GL_COMPILE);
+	draw(0, 0);
+	glEndList();
 }
 
 // This draw the character to an arbitrary position decided by caller.
@@ -67,8 +73,6 @@ vertexVector letterPointsA = {
 	vertix {0.4, 0.2}
 };
 
-Letter A = Letter(letterPointsA);
-
 vertexVector letterB = {
 
 };
@@ -82,7 +86,7 @@ vertexVector letterPointsC = {
 	vertix {0.5, 0.5},
 };
 
-Letter C = Letter(letterPointsC);
+
 
 vertexVector letterD = {
 
@@ -96,10 +100,18 @@ vertexVector letterF = {
 
 };
 
+Letter A = Letter(letterPointsA);
+Letter C = Letter(letterPointsC);
+
 vector<Letter*> allLetters = {
 	&A,
 	&C
 };
+
+void init() {
+	letterToDraw = allLetters[0];
+	characterOffset = 0;
+}
 
 void renderCharacter(char c) {
 	characterOffset += HORIZONTAL_LETTER_WIDTH;
@@ -156,10 +168,6 @@ void test() {
 
 }
 
-void init() {
-	letterToDraw = allLetters[0];
-	characterOffset = 0;
-}
 
 void reshape(int w, int h) {
 	glViewport(0, 0, w, h);
