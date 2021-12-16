@@ -161,6 +161,14 @@ void init() {
 	characterOffset = 0;
 }
 
+void reshape(int w, int h) {
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, 2.0, 0.0, 2.0, -1.0, 1.0);
+	cout << w << " " << h << endl;
+}
+
 int main(int argc, char** argv) {
 	int mode = GLUT_RGB | GLUT_DOUBLE;
 	glutInit(&argc, argv);
@@ -170,6 +178,7 @@ int main(int argc, char** argv) {
 	init();
 	test();
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
 	glutKeyboardFunc(keyPressHandler);
 	glutSpecialFunc(specialKeyFunc);
 	glutMouseFunc(mouse);
