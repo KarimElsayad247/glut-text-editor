@@ -28,6 +28,18 @@ void display(){
     glFlush();
 }
 
+void keyboard(unsigned char key, int x, int y){
+    cout << key << endl;
+    if (key >= 'a' && key <= 'z' || key >= 'A' && key <= 'Z' || key >= '0' && key <= '9' || key == ' '){
+        text += key;
+    }
+    else if (key == '\b'){
+        text = text.substr(0, text.length() - 1);
+    }
+
+    glutPostRedisplay();
+}
+
 int main(int argc, char **argv)
 {
 
@@ -47,6 +59,7 @@ int main(int argc, char **argv)
     glMatrixMode(GL_MODELVIEW); //default 
 
     glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
 
     glutMainLoop();
 
