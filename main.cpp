@@ -5,6 +5,7 @@
 #define SCREEN_HEIGHT 500
 
 #define HORIZONTAL_LETTER_WIDTH 0.5
+#define SPACING 0.05
 
 #include <GL/freeglut.h>
 #include <iostream>
@@ -33,16 +34,24 @@ public:
 	vector<vertix> points;
 	Letter(vector<vertix> &p);
 	void draw(double x, double y);
+	void init();
+	void display();
 };
 
 Letter::Letter(vector<vertix> &p) {
 	points = p;
+}
+
+void Letter::init() {
 	listID = glGenLists(1);
 	glNewList(listID, GL_COMPILE);
 	draw(0, 0);
 	glEndList();
 }
 
+void Letter::display() {
+	glCallList(listID);
+}
 // This draw the character to an arbitrary position decided by caller.
 // Useful for creating a buffer (array of letters) that calls draw on all its contents
 void Letter::draw(double x, double y) {
@@ -100,38 +109,106 @@ vertexVector letterF = {
 
 };
 
-Letter A = Letter(letterPointsA);
-Letter C = Letter(letterPointsC);
+vertexVector letterG = {
 
-vector<Letter*> allLetters = {
-	&A,
-	&C
 };
 
+vertexVector letterH = {
+	vertix {0, 0},
+	vertix {0, 0.5},
+	vertix {0.5, 0},
+	vertix {0.5, 0.5},
+	vertix {0, 0.25},
+	vertix {0.5, 0.25}
+};
+
+vertexVector letterI = {
+
+};
+
+vertexVector letterJ = {
+
+};
+
+vertexVector letterK = {
+
+};
+
+vertexVector letterL = {
+
+};
+
+vertexVector letterM = {
+
+};
+
+vertexVector letterN = {
+
+};
+
+vertexVector letterO = {
+
+};
+
+vertexVector letterP = {
+
+};
+
+vertexVector letterQ = {
+
+};
+
+
+
+Letter A = Letter(letterPointsA);
+Letter C = Letter(letterPointsC);
+Letter H = Letter(letterH);
+vector<Letter*> allLetters = {
+	&A,
+	&C,
+	&H
+};
+
+
+// buffer to contain character on screen
+vector<Letter*> buffer;
+unsigned int numCharacterInBuffer = 0;
+
 void init() {
-	letterToDraw = allLetters[0];
-	characterOffset = 0;
+	for (Letter* letter: allLetters) {
+		letter->init();
+	}
 }
 
-void renderCharacter(char c) {
+void renderCharacter(unsigned char c) {
 	characterOffset += HORIZONTAL_LETTER_WIDTH;
 	c = toupper(c);
 	switch (c) {
 	case 'A':
-		letterToDraw = allLetters[0];
+		buffer.push_back(allLetters[0]);
 		break;
 	case 'C':
-		letterToDraw = allLetters[1];
+		buffer.push_back(allLetters[1]);
+		break;
+	case 'H':
+		buffer.push_back(allLetters[2]);
 		break;
 	}
 }
+
+
 
 void display() {
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glColor3f(0, 0, 0);
-	letterToDraw->draw(0, 0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	for (unsigned i = 0; i < buffer.size(); ++i) {
+		buffer[i]->display();
+		glTranslatef(HORIZONTAL_LETTER_WIDTH + SPACING, 0, 0);
+	}
 
 	glEnd();
 	glutSwapBuffers();
@@ -144,6 +221,11 @@ void keyPressHandler(unsigned char c, int x, int y) {
 	}
 
 	switch(c) {
+	case 8:
+		if (!buffer.empty()) {
+			buffer.pop_back();
+		}
+		break;
 	case 27:
 		cout << "Exiting" << endl;
 		exit(EXIT_SUCCESS);
