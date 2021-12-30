@@ -1,7 +1,11 @@
+#define FREEGLUT_LIB_PRAGMAS 1
+#define FREEGLUT_STATIC 1
+
 #include <stdio.h>
+//#include<GL/gl.h>
+//#include<GL/glu.h>
+#include <GL/glut.h>
 #include <iostream>
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include <GL/glut.h>
 #include <string>
 #include <list>
